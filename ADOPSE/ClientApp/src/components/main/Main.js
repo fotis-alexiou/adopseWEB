@@ -8,6 +8,7 @@ import girl from "./girl.png";
 import { useNavigate } from "react-router-dom";
 import "./calendarStyle.scss";
 import CustomToolbar from "./customToolbar";
+import { message } from "antd";
 
 const localizer = momentLocalizer(moment);
 const userRole = localStorage.getItem("role");
@@ -37,6 +38,33 @@ const MainPage = () => {
   const toggleModuleList = () => {
     setIsVisible(!isVisible)
   };  
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const key = "updatable2"
+
+const successCal = () => {
+  messageApi.open({
+    key,
+    type: "success",
+    content: "Done, fetched & synchronized successfully!",
+    style: {
+      marginTop: "60px",
+      color: 'green',
+    },
+  });
+};
+
+const errorCal = () => {
+  messageApi.open({
+    key,
+    type: "error",
+    content: "Fetch & Sync failed",
+    style: {
+      marginTop: "60px",
+      color: 'red',
+    },
+  });
+};
 
   useEffect(() => {
     var myHeaders = new Headers();
@@ -154,14 +182,15 @@ const MainPage = () => {
     .then(data => {
       setIsFetchAndSync(false)
       console.log(data)
+      successCal()
       return data;
     })
     .catch((error) => {
       setIsFetchAndSync(false)
       console.log("error", error)
+      errorCal();
     });
     console.log(eventList);
-    alert("Synchronized as well as posible! Thanks for your services.");
  }
 
  const handleCheckboxState = async (moduleId) => {
@@ -243,6 +272,7 @@ const MainPage = () => {
           }
           {userRole === "Admin" && (
             <div className="down-section">
+              {contextHolder}
             <>
               <button
                 className="fetchAndSync-button"
